@@ -20,6 +20,16 @@ CREATE TABLE Medicamente (
     FOREIGN KEY (FamiliaID) REFERENCES Familia(FamiliaID)
 );
 
+CREATE TABLE Laboratorio (
+    LaboratorioCode INT PRIMARY KEY,
+    LaboratorioName VARCHAR(255) NOT NULL,
+    Telefono VARCHAR(20),
+    Dirrecion VARCHAR(255),
+    Fax VARCHAR(20),
+    ContactPerso VARCHAR(255)
+);
+
+
 CREATE TABLE Cliente (
     ClienteID INT PRIMARY KEY,
     ClienteNombre VARCHAR(255),
@@ -31,8 +41,8 @@ CREATE TABLE Comprado (
     CompraID INT PRIMARY KEY,
     MedicamenteCode INT,
     ClienteID INT,
-    DatosDeCompra DATE,
-    UnidosCompra INT,
+    DatosDeComprado DATE,
+    UnidosComprado INT,
     CreditoCompra BOOLEAN, 
     FechaCompra DATE, 
     FOREIGN KEY (MedicamenteCode) REFERENCES Medicamente(MedicamenteCode),
