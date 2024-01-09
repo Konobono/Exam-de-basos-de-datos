@@ -1,0 +1,43 @@
+CREATE PROC dbo.Farmacia
+AS
+CREATE DATABASE db_FarmaciaMenajo
+
+GO
+
+CREATE TABLE Familia (
+    FamiliaID INT PRIMARY KEY,
+    FamiliaName VARCHAR(255)
+);
+
+CREATE TABLE Medicamente (
+    MedicamenteCode INT PRIMARY KEY,
+    MedicamenteName VARCHAR(255),
+    MedicamenteType VARCHAR(50), 
+    DeVentaLibre INT,
+    UnidadesVendidas INT,
+    Precio DECIMAL(10, 2),
+    FamiliaID INT,
+    FOREIGN KEY (FamiliaID) REFERENCES Familia(FamiliaID)
+);
+
+CREATE TABLE Cliente (
+    ClienteID INT PRIMARY KEY,
+    ClienteNombre VARCHAR(255),
+    CreditoCliente BOOLEAN, -- Verdadero o falso
+    DatosBancarios VARCHAR(255) 
+);
+
+CREATE TABLE Comprado (
+    CompraID INT PRIMARY KEY,
+    MedicamenteCode INT,
+    ClienteID INT,
+    DatosDeCompra DATE,
+    UnidosCompra INT,
+    CreditoCompra BOOLEAN, 
+    FechaCompra DATE, 
+    FOREIGN KEY (MedicamenteCode) REFERENCES Medicamente(MedicamenteCode),
+    FOREIGN KEY (ClienteID) REFERENCES Cliente(ClienteID)
+);
+
+
+/* El modelo entidad-relación está en el papel */
