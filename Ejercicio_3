@@ -1,0 +1,103 @@
+-- Crear base de datos de farmacia
+CREATE DATABASE IF NOT EXISTS Pharmacy;
+USE Pharmacy;
+
+CREATE TABLE Familia (
+    FamiliaID INT PRIMARY KEY,
+    FamiliaName VARCHAR(255) NOT NULL
+);
+
+INSERT INTO Familia (FamiliaID, FamiliaName) VALUES
+    (1, 'Algo1'),
+    (2, 'Algo2'),
+    (3, 'Algo3'),
+    (4, 'Algo4'),
+    (5, 'Algo5');
+
+CREATE TABLE Laboratorio (
+    LaboratorioCode INT PRIMARY KEY,
+    LaboratorioName VARCHAR(255),
+    Telefono VARCHAR(20),
+    Dirrecion VARCHAR(255),
+    Fax VARCHAR(20),
+    ContactPerso VARCHAR(255)
+);
+
+INSERT INTO Laboratorio (LaboratorioCode, LaboratorioName, Telefono, Dirrecion, Fax, ContactPerson) VALUES
+    (101, 'SomeLab', '123-456-789', 'Street1', '789-123-456', 'John John'),
+    (102, 'Something Inc.', '987-654-321', 'Street2', '654-321-986', 'Jane Jane'),
+
+CREATE TABLE Medication (
+    MedicamenteCode INT PRIMARY KEY,
+    MedicamenteName VARCHAR(255) NOT NULL,
+    MedicamenteType VARCHAR(50) NOT NULL, -- Sin receta o con receta
+    DeVentaLibre INT NOT NULL,
+    UnidadesVendidas INT NOT NULL,
+    Precio DECIMAL(10, 2) NOT NULL,
+    FamiliaID INT,
+    LaboratoryCode INT,
+    FOREIGN KEY (FamiliaID) REFERENCES Familia(FamiliaID),
+    FOREIGN KEY (LaboratorioCode) REFERENCES Laboratorio(LaboratorioCode)
+);
+
+INSERT INTO Medication (MedicamenteCode, MedicamenteName, MedicamenteType, DeVentaLibre, UnidadesVendidas, Precio, FamiliaID, LaboratorioCode) VALUES
+    (1001, 'PainAway', 'Sin receta', 100, 50, 9.99, 1, 101),
+    (1002, 'AntibioX', 'Con receta', 50, 20, 9.99, 2, 102),
+    (1003, 'AllerRelief', 'Sin receta', 70, 30, 9.99, 3, 101),
+    (1004, 'ColdFix', 'Sin receta', 120, 80, 9.99, 4, 102),
+    (1005, 'HeartGuard', 'Con receta', 30, 10, 9.99, 5, 101);
+
+CREATE TABLE Cliente (
+    ClienteID INT PRIMARY KEY,
+    ClienteNombre VARCHAR(255) NOT NULL,
+    CreditoCliento BOOLEAN NOT NULL, -- Indica si el cliente tiene crédito
+    DatosBancarios VARCHAR(255), 
+);
+
+INSERT INTO Customer (CustomerID, CustomerName, CreditCustomer, BankDetails) VALUES
+    (201, 'John John', true, 'Banco de la Farmacia, Cuenta: 123-456-789'),
+    (202, 'Jane Jane', false, NULL),
+
+CREATE TABLE Comprado (
+    CompraID INT PRIMARY KEY,
+    MedicamenteCode INT,
+    ClienteID INT,
+    DatosDeComprado DATE NOT NULL,
+    UnidosComprado INT NOT NULL,
+    CreditoCompra BOOLEAN NOT NULL, 
+    FechaCompra DATE, 
+    FOREIGN KEY (MedicamenteCode) REFERENCES Medicamente(MedicamenteCode),
+    FOREIGN KEY (ClienteID) REFERENCES Cliente(ClienteID)
+);
+
+INSERT INTO Purchase (PurchaseID, MedicationCode, CustomerID, PurchaseDate, UnitsPurchased, IsCreditPurchase, PaymentDate) VALUES
+    (301, 1001, 201, '2024-01-05', 5, true, '2024-02-05'),
+    (302, 1002, 202, '2024-01-10', 2, false, NULL),
+    (303, 1003, 201, '2024-01-15', 3, true, '2024-02-15'),
+    (304, 1004, 202, '2024-01-20', 4, false, NULL),
+    (305, 1005, 201, '2024-01-25', 1, true, '2024-02-25');
+
+-- Crear activador para actualizar el stock de medicamentos al momento de la compra
+DELIMITER //
+CREATE TRIGGER UpdateMedicamenteStock AFTER INSERT ON Comprado
+FOR EACH ROW
+BEGIN
+    DECLARE unidadesCompradas INT;
+    
+    -- Obtener el número de unidades compradas
+    SELECT UnidosComprado INTO unidadesCompradas FROM Comprado WHERE CompraID = NEW.CompraID;
+    
+    -- Actualizar la tabla Unidades en stock y UnidadesVendidas en medicación.
+    UPDATE Medicamente
+    SET DeVentaLibre = DeVentaLibre - unidadesCompradas,
+        UnidadesVendidas = UnidadesVendidas + unidadesCompradas
+    WHERE MedicamenteCode = NEW.MedicamenteCode;
+END;
+//
+DELIMETER ;
+
+
+
+
+
+
