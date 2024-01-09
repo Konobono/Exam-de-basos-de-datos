@@ -77,6 +77,8 @@ INSERT INTO Purchase (PurchaseID, MedicationCode, CustomerID, PurchaseDate, Unit
     (304, 1004, 202, '2024-01-20', 4, false, NULL),
     (305, 1005, 201, '2024-01-25', 1, true, '2024-02-25');
 
+/* TRIGGER */
+
 -- Crear activador para actualizar el stock de medicamentos al momento de la compra
 DELIMITER //
 CREATE TRIGGER UpdateMedicamenteStock AFTER INSERT ON Comprado
@@ -95,7 +97,6 @@ BEGIN
 END;
 //
 DELIMETER ;
-
 
 
 
